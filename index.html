@@ -1,0 +1,1153 @@
+<html><head><base href="/" /><title>Sistema de Reservas Escolares - San Ignacio de Loyola y Santa Claudina Thevenet</title>
+<style>
+:root {
+  --primary: #4eb4ff;    /* Bright blue */
+  --secondary: #ff5a5a;  /* Red */
+  --background: #1f1f1f; /* Dark background */
+  --card-bg: #2d2d2d;    /* Darker gray */
+  --text: #ffffff;       /* White */
+  --border-color: #3d3d3d; /* Dark border */
+  --accent: #ffeb3b;     /* Yellow accent */
+}
+
+:root[data-theme="light"] {
+  --primary: #4169e1;    /* Royal blue */
+  --secondary: #ff4444;  /* Bright red */
+  --background: #f0f0f0; /* Light gray background */
+  --card-bg: #ffffff;    /* White */
+  --text: #1f1f1f;
+  --border-color: #e0e0e0;
+  --accent: #ff6b6b;     /* Coral red */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: clamp(20px, 4vw, 30px);
+  background: var(--background);
+  color: var(--text);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: min(1200px, 95vw);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+  position: relative;
+}
+
+.header h1 {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+}
+
+.header-graphics {
+  display: flex;
+  justify-content: center;
+  margin: -20px 0 20px;
+}
+
+.school-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+.connection-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffa500;
+  transition: var(--transition);
+  animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.status-dot.connected {
+  background: #4caf50;
+}
+
+.status-dot.disconnected {
+  background: #f44336;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: clamp(1rem, 3vw, 1.5rem);
+}
+
+.resource-card {
+  border: 1px solid var(--border-color);
+  background: linear-gradient(145deg, var(--card-bg), var(--card-bg));
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+.resource-card:hover {
+  transform: translateY(-5px);
+}
+
+.resource-card-header {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.resource-card-header .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resource-status {
+  padding: 1rem;
+}
+
+.status {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  display: block;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.status small {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+}
+
+.status-reserved {
+  border: 2px solid var(--secondary);
+  background: linear-gradient(135deg, #ff0000, #cc0000) !important;
+  padding: 1.25rem;
+  margin: 1rem 0;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
+}
+
+.countdown-timer {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--card-bg);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+.time-selection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.time-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.time-field label {
+  font-size: 0.875rem;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+.time-field input {
+  border: 2px solid var(--primary);
+  background: rgba(0,0,0,0.1);
+  color: var(--text);
+  font-weight: 600;
+  padding: 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.time-field input:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(255,90,90,0.2);
+  transform: translateY(-3px);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+  padding: 7px 16px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-pulse:hover {
+  animation: pulsing 1.5s infinite;
+}
+
+@keyframes pulsing {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.message {
+  padding: 0.9rem 1.4rem;
+  border-radius: 10px;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.95rem;
+  animation: fadeInUp 0.3s ease;
+}
+
+.confirmation-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+  text-align: center;
+  z-index: 1100;
+  animation: scaleIn 0.3s ease;
+  border: 2px solid var(--primary);
+}
+
+.confirmation-dialog h2 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.confirmation-dialog p {
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+.confirmation-dialog .btn {
+  display: inline-block;
+  min-width: 120px;
+}
+
+@keyframes scaleIn {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  background: var(--card-bg);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  z-index: 1000;
+  animation: slideIn 0.3s ease;
+  max-width: 350px;
+}
+
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0,0,0,0.8), rgba(0,0,0,0.9));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.login-card {
+  background: linear-gradient(145deg, var(--card-bg), rgba(45, 45, 45, 0.9));
+  border: 2px solid var(--primary);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 450px;
+  animation: loginAppear 0.6s ease;
+}
+
+.login-card h2 {
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text);
+  opacity: 0.9;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text);
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.login-field input:focus {
+  border-color: var(--primary);
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.login-form .btn {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-form .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.login-form .btn:active {
+  transform: translateY(1px);
+}
+
+.login-error {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  text-align: center;
+  animation: shakeError 0.5s ease;
+  display: none;
+}
+
+.login-error.success {
+  background: rgba(76, 175, 80, 0.15);
+  border: 2px solid #4CAF50;
+  animation: successPulse 2s infinite;
+}
+
+@keyframes loginAppear {
+  0% { 
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  100% { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shakeError {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.welcome-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  animation: welcomeFadeOut 3s ease forwards;
+}
+
+.welcome-message {
+  background: var(--card-bg);
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  animation: welcomeScaleIn 0.6s ease;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+@keyframes welcomeScaleIn {
+  0% { 
+    opacity: 0;
+    transform: scale(0.8) translateY(30px);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes welcomeFadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .btn {
+    padding: 0.625rem 1.25rem;
+  }
+  
+  .resource-card {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .status {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(1);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(10deg);
+}
+
+.theme-toggle:active {
+  transform: scale(0.9);
+}
+
+.theme-toggle svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--text);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: var(--text);
+  color: var(--background);
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Position the tooltip above the text */
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+@keyframes spinner {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner {
+  border: 4px solid var(--card-bg);
+  border-top: 4px solid var(--secondary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spinner 1s linear infinite;
+}
+
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+  <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+  </svg>
+  <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+  </svg>
+</button>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <h2>Iniciar Sesión</h2>
+    <form class="login-form" id="loginForm">
+      <div class="login-field">
+        <label>Usuario</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="login-field">
+        <label>Contraseña</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" class="btn">Ingresar</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<div class="spinner" id="loadingSpinner" style="display: none;"></div>
+
+<div class="container">
+  <div class="header">
+    <h1>Sistema de Reservas Escolares<br>San Ignacio de Loyola y Santa Claudina Thevenet</h1>
+    <div class="header-graphics">
+      <svg class="school-icon" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5">
+        <path d="M12 1L1 7l11 6 11-6-11-6zM1 17l11 6 11-6M1 12l11 6 11-6"/>
+      </svg>
+    </div>
+    <div class="connection-status" id="connection-status">
+      <span class="status-dot"></span>
+      <span class="status-text">Conectando...</span>
+    </div>
+  </div>
+
+  <div id="message-container"></div>
+
+  <div class="resources-grid" id="resources">
+    <!-- Los recursos se cargarán dinámicamente -->
+  </div>
+</div>
+
+<script>
+class AuthManager {
+  constructor() {
+    this.credentials = {
+      username: 'alvaro',
+      password: '12345678'
+    };
+    this.inactivityTimeout = null;
+    this.init();
+    this.startInactivityTimer();
+  }
+
+  startInactivityTimer() {
+    document.addEventListener('mousemove', () => this.resetInactivityTimer());
+    document.addEventListener('keypress', () => this.resetInactivityTimer());
+    document.addEventListener('click', () => this.resetInactivityTimer());
+    
+    this.resetInactivityTimer();
+  }
+
+  resetInactivityTimer() {
+    if (this.inactivityTimeout) {
+      clearTimeout(this.inactivityTimeout);
+    }
+    
+    this.inactivityTimeout = setTimeout(() => {
+      if (localStorage.getItem('isLoggedIn') === 'true') {
+        this.logout();
+      }
+    }, 30000);
+  }
+
+  logout() {
+    localStorage.removeItem('isLoggedIn');
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    this.showMessage('Sesión expirada por inactividad');
+  }
+
+  showMessage(message) {
+    const loginError = document.getElementById('loginError');
+    loginError.style.backgroundColor = 'rgba(255, 152, 0, 0.1)';
+    loginError.style.borderColor = '#FF9800';
+    loginError.style.color = '#FF9800';
+    loginError.textContent = message;
+    loginError.style.display = 'block';
+  }
+
+  authenticate(username, password) {
+    const isValid = username === this.credentials.username && 
+                   password === this.credentials.password;
+    document.getElementById('password').value = '';
+    return isValid;
+  }
+
+  init() {
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const loginOverlay = document.getElementById('loginOverlay');
+
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      loginOverlay.style.display = 'none';
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (!username || !password) {
+        this.showError('Por favor complete todos los campos');
+        return;
+      }
+
+      if (this.authenticate(username, password)) {
+        this.showSuccess('¡Acceso correcto! Bienvenido al sistema.');
+        setTimeout(() => {
+          localStorage.setItem('isLoggedIn', 'true');
+          loginOverlay.style.display = 'none';
+          this.showWelcome();
+        }, 1500);
+      } else {
+        this.showError('Usuario o contraseña incorrectos');
+        document.getElementById('password').value = '';
+        document.getElementById('username').classList.add('error');
+        document.getElementById('password').classList.add('error');
+      }
+    });
+  }
+
+  showSuccess(message) {
+    const loginError = document.getElementById('loginError');
+    loginError.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+    loginError.style.borderColor = '#4CAF50';
+    loginError.style.color = '#4CAF50';
+    loginError.textContent = message;
+    loginError.style.display = 'block';
+  }
+
+  showWelcome() {
+    const welcomeOverlay = document.createElement('div');
+    welcomeOverlay.className = 'welcome-overlay';
+    welcomeOverlay.innerHTML = `
+      <div class="welcome-message">
+        <h2>¡Bienvenido!</h2>
+        <p>Gracias por ingresar al Sistema de Reservas Escolares</p>
+      </div>
+    `;
+    document.body.appendChild(welcomeOverlay);
+
+    setTimeout(() => {
+      welcomeOverlay.style.opacity = '0';
+      setTimeout(() => welcomeOverlay.remove(), 500);
+    }, 2000);
+  }
+
+  showError(message) {
+    const loginError = document.getElementById('loginError');
+    loginError.textContent = message;
+    loginError.style.display = 'block';
+    
+    setTimeout(() => {
+      loginError.style.display = 'none';
+      document.getElementById('username').classList.remove('error');
+      document.getElementById('password').classList.remove('error');
+    }, 3000);
+  }
+}
+
+const authManager = new AuthManager();
+
+class ResourceManager {
+  constructor() {
+    this.resources = [
+      { id: 1, name: 'Aula Auxiliar 1', available: true, startTime: null, endTime: null },
+      { id: 2, name: 'Aula Auxiliar 2', available: true, startTime: null, endTime: null },
+      { id: 3, name: 'Aula Auxiliar 3', available: true, startTime: null, endTime: null },
+      { id: 4, name: 'Salón de Actos', available: true, startTime: null, endTime: null },
+      { id: 5, name: 'Proyector', available: true, startTime: null, endTime: null },
+      { id: 6, name: 'Equipo de Sonido', available: true, startTime: null, endTime: null },
+      { id: 7, name: 'Biblioteca', available: true, startTime: null, endTime: null },
+      { id: 8, name: 'Guardería', available: true, startTime: null, endTime: null }
+    ];
+    this.initWebSocket();
+    this.init();
+  }
+
+  init() {
+    this.renderResources();
+    this.attachEventListeners();
+  }
+
+  initWebSocket() {
+    this.ws = new WebSocket('wss://demo.piesocket.com/v3/channel_1?api_key=VCXCEuvhGcBDP7XhiJJUDvR1e1D3eiVjgZ9VRiaV&notify_self');
+    
+    this.ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+      const statusDot = document.querySelector('.status-dot');
+      const statusText = document.querySelector('.status-text');
+      statusDot.className = 'status-dot connected';
+      statusText.textContent = 'Conectado';
+    };
+
+    this.ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'resourceUpdate') {
+        this.handleRemoteUpdate(data.resources);
+      }
+    };
+
+    this.ws.onclose = () => {
+      console.log('Disconnected from WebSocket server');
+      const statusDot = document.querySelector('.status-dot');
+      const statusText = document.querySelector('.status-text');
+      statusDot.className = 'status-dot disconnected';
+      statusText.textContent = 'Reconectando...';
+      setTimeout(() => this.initWebSocket(), 3000);
+    };
+  }
+
+  handleRemoteUpdate(updatedResources) {
+    this.resources = updatedResources;
+    this.renderResources();
+  }
+
+  broadcastUpdate() {
+    if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({
+        type: 'resourceUpdate',
+        resources: this.resources
+      }));
+    }
+  }
+
+  renderResources() {
+    const resourcesContainer = document.getElementById('resources');
+    resourcesContainer.innerHTML = this.resources.map(resource => `
+      <div class="resource-card" id="resource-${resource.id}">
+        <div class="resource-card-header">
+          <div class="avatar tooltip">
+            ${this.getResourceIcon(resource.name)}
+            <span class="tooltiptext">Icono del recurso</span>
+          </div>
+          <h3>${resource.name}</h3>
+        </div>
+        
+        <div class="resource-status">
+          <span class="status ${resource.available ? 'status-available' : 'status-reserved'}">
+            ${resource.available ? 'Disponible' : 'Reservado'}
+            ${!resource.available ? `
+              <small>De: ${resource.startTime} a ${resource.endTime}</small>
+              <div class="countdown-timer" id="countdown-${resource.id}"></div>
+            ` : ''}
+          </span>
+        </div>
+        
+        ${resource.available ? `
+          <div class="time-selection">
+            <div class="time-field">
+              <label>Hora inicio:</label>
+              <input type="time" id="start-${resource.id}" required>
+            </div>
+            <div class="time-field">
+              <label>Hora fin:</label>
+              <input type="time" id="end-${resource.id}" required>
+            </div>
+          </div>
+        ` : ''}
+        
+        <div class="action-buttons">
+          ${resource.available ? 
+            `<button class="btn btn-reserve btn-pulse" onclick="resourceManager.reserveResource(${resource.id})">
+              Reservar
+            </button>` :
+            `<button class="btn btn-cancel btn-pulse" onclick="resourceManager.cancelReservation(${resource.id})">
+              Cancelar
+            </button>`
+          }
+        </div>
+      </div>
+    `).join('');
+  }
+
+  getResourceIcon(name) {
+    const icons = {
+      'Aula Auxiliar': '<svg class="resource-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-5 14h-4v-4h4v4zm0-6h-4V7h4v4z"/></svg>',
+      'Salón de Actos': '<svg class="resource-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>',
+      'Proyector': '<svg class="resource-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm8 11l5-3-5-3v6z"/></svg>',
+      'Equipo de Sonido': '<svg class="resource-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M19 12l-7-7-7 7"/></svg>',
+      'Biblioteca': '<svg class="resource-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>',
+      'Guardería': '<svg class="resource-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z"/></svg>'
+    };
+    
+    for (const [key, icon] of Object.entries(icons)) {
+      if (name.includes(key)) return icon;
+    }
+    return icons['Aula Auxiliar']; // default icon
+  }
+
+  showMessage(text, type) {
+    const messageContainer = document.getElementById('message-container');
+    const icon = type === 'success' ? 
+      '<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' :
+      '<svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+    
+    messageContainer.innerHTML = `
+      <div class="message message-${type}">
+        ${icon}
+        ${text}
+      </div>
+    `;
+    setTimeout(() => {
+      messageContainer.innerHTML = '';
+    }, 3000);
+  }
+
+  showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+
+  showConfirmDialog(message, onConfirm) {
+    const dialog = document.createElement('div');
+    dialog.className = 'dialog-overlay';
+    dialog.innerHTML = `
+      <div class="dialog">
+        <h3>${message}</h3>
+        <div class="action-buttons">
+          <button class="btn btn-reserve" id="confirm">Confirmar</button>
+          <button class="btn btn-cancel" id="cancel">Cancelar</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(dialog);
+    
+    dialog.querySelector('#confirm').addEventListener('click', () => {
+      onConfirm();
+      dialog.remove();
+    });
+    
+    dialog.querySelector('#cancel').addEventListener('click', () => {
+      dialog.remove();
+    });
+  }
+
+  reserveResource(id) {
+    const resource = this.resources.find(r => r.id === id);
+    if (!resource) return;
+
+    const startTime = document.getElementById(`start-${id}`).value;
+    const endTime = document.getElementById(`end-${id}`).value;
+
+    if (!startTime || !endTime) {
+      this.showMessage('Por favor, seleccione hora de inicio y fin', 'error');
+      return;
+    }
+
+    if (startTime >= endTime) {
+      this.showMessage('La hora de fin debe ser posterior a la hora de inicio', 'error');
+      return;
+    }
+
+    if (resource.available) {
+      const now = new Date();
+      const start = new Date();
+      const [startHours, startMinutes] = startTime.split(':');
+      start.setHours(parseInt(startHours), parseInt(startMinutes), 0);
+
+      const isFutureReservation = start > now;
+      const dialogMessage = isFutureReservation ? 
+        `Su reserva ha sido programada para iniciar a las ${startTime}` :
+        `¡Reserva Exitosa! El temporizador comenzará inmediatamente`;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'dialog-overlay';
+      
+      const dialog = document.createElement('div');
+      dialog.className = 'confirmation-dialog';
+      dialog.innerHTML = `
+        <h2>¡Reserva Exitosa!</h2>
+        <p>${dialogMessage}</p>
+        <button class="btn">Aceptar</button>
+      `;
+      
+      overlay.appendChild(dialog);
+      document.body.appendChild(overlay);
+      
+      dialog.querySelector('.btn').addEventListener('click', () => {
+        resource.available = false;
+        resource.startTime = startTime;
+        resource.endTime = endTime;
+        this.renderResources();
+        this.startCountdown(resource);
+        this.broadcastUpdate();
+        overlay.remove();
+      });
+    } else {
+      this.showMessage(`Lo sentimos, ${resource.name} ya está reservado.`, 'error');
+    }
+  }
+
+  cancelReservation(id) {
+    const resource = this.resources.find(r => r.id === id);
+    if (!resource) return;
+
+    if (!resource.available) {
+      if (resource.countdownInterval) {
+        clearInterval(resource.countdownInterval);
+      }
+      resource.available = true;
+      resource.startTime = null;
+      resource.endTime = null;
+      this.showMessage(`La reserva de ${resource.name} ha sido cancelada.`, 'success');
+      this.renderResources();
+      this.broadcastUpdate();
+    } else {
+      this.showMessage(`${resource.name} no está reservado actualmente.`, 'error');
+    }
+  }
+
+  updateCountdown(resourceId, endTime) {
+    const countdownEl = document.getElementById(`countdown-${resourceId}`);
+    if (!countdownEl) return;
+
+    const resource = this.resources.find(r => r.id === resourceId);
+    const now = new Date();
+    const start = new Date();
+    const end = new Date();
+    
+    const [startHours, startMinutes] = resource.startTime.split(':');
+    const [endHours, endMinutes] = endTime.split(':');
+    
+    start.setHours(parseInt(startHours), parseInt(startMinutes), 0);
+    end.setHours(parseInt(endHours), parseInt(endMinutes), 0);
+
+    if (now < start) {
+      countdownEl.textContent = `La reserva iniciará a las ${resource.startTime}`;
+      return;
+    }
+
+    if (end < now) {
+      end.setDate(end.getDate() + 1);
+    }
+
+    const remaining = end - now;
+    
+    if (remaining <= 0) {
+      clearInterval(resource.countdownInterval);
+      this.cancelReservation(resourceId);
+      return;
+    }
+
+    const hoursLeft = Math.floor(remaining / (1000 * 60 * 60));
+    const minutesLeft = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+    const secondsLeft = Math.floor((remaining % (1000 * 60)) / 1000);
+
+    const formattedHours = String(hoursLeft).padStart(2, '0');
+    const formattedMinutes = String(minutesLeft).padStart(2, '0');
+    const formattedSeconds = String(secondsLeft).padStart(2, '0');
+
+    countdownEl.textContent = `Tiempo restante: ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+  }
+
+  startCountdown(resource) {
+    if (!resource.available && resource.endTime) {
+      if (resource.countdownInterval) {
+        clearInterval(resource.countdownInterval);
+      }
+      
+      this.updateCountdown(resource.id, resource.endTime);
+      
+      resource.countdownInterval = setInterval(() => {
+        this.updateCountdown(resource.id, resource.endTime);
+      }, 1000);
+    }
+  }
+
+  attachEventListeners() {
+  }
+}
+
+class ThemeManager {
+  constructor() {
+    this.themeToggle = document.getElementById('theme-toggle');
+    this.sunIcon = document.querySelector('.sun-icon');
+    this.moonIcon = document.querySelector('.moon-icon');
+    this.init();
+  }
+
+  init() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    this.updateIcon(savedTheme);
+    this.themeToggle.addEventListener('click', () => this.toggleTheme());
+  }
+
+  toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    this.updateIcon(newTheme);
+  }
+
+  updateIcon(theme) {
+    if (theme === 'dark') {
+      this.sunIcon.style.display = 'none';
+      this.moonIcon.style.display = 'block';
+    } else {
+      this.sunIcon.style.display = 'block';
+      this.moonIcon.style.display = 'none';
+    }
+  }
+}
+
+const themeManager = new ThemeManager();
+const resourceManager = new ResourceManager();
+</script>
+
+</body>
+</html>
